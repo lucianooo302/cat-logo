@@ -4,9 +4,9 @@ const cartModal = document.getElementById("cart-modal");
 const cartItemsContainer = document.getElementById("cart-items");
 const cartTotal = document.getElementById("cart-total");
 const checkoutBtn = document.getElementById("checkout-btn");
-const clouseModalBtn = document.getElementById("close-modal-btn");
+const closeModalBtn = document.getElementById("close-modal-btn");
 const cartCounter = document.getElementById("cart-count");
-const colorSelect = document.getElementById("color"); // Selecionando a cor
+const feedbackContainer = document.getElementById("feedback-container");
 
 // Array para armazenar os itens no carrinho
 let cart = [];
@@ -23,49 +23,70 @@ cartModal.addEventListener("click", function(event) {
   }
 });
 
-clouseModalBtn.addEventListener("click", function() {
+// Fechar o modal do carrinho
+closeModalBtn.addEventListener("click", function() {
   cartModal.style.display = "none";
 });
 
 // Evento para adicionar ao carrinho ao clicar no botão
 menu.addEventListener("click", function(event) {
-  let parentButton = event.target.closest(".add-to-cart-btn");
-  if (parentButton) {
-    const name = parentButton.getAttribute("data-name");
-    const price = parseFloat(parentButton.getAttribute("data-price"));
-    const color = colorSelect.value; // Capturando a cor selecionada
+  if (event.target.classList.contains("add-to-cart-btn") || event.target.closest(".add-to-cart-btn")) {
+    const button = event.target.closest(".add-to-cart-btn");
+    const productDiv = button.closest('.product-item');
+    const name = button.getAttribute("data-name");
+    const price = parseFloat(button.getAttribute("data-price"));
 
-    addToCart(name, price, color);
+    addToCart(name, price);
   }
 });
 
 // Função para adicionar o item ao carrinho
-function addToCart(name, price, color) {
-  // Verificar se há um item com o mesmo nome e cor no carrinho
-  const existingItem = cart.find(item => item.name === name && item.color === color);
+function addToCart(name, price) {
+  const existingItem = cart.find(item => item.name === name);
 
   if (existingItem) {
-    // Se o item com a mesma cor já existe, aumentamos a quantidade
     existingItem.quantity += 1;
   } else {
-    // Caso contrário, adicionamos o novo item com a cor selecionada
     cart.push({
       name,
       price,
-      color: color ? color : 'Não definida', // Adicionando a cor ao item ou colocando "Não definida"
       quantity: 1
     });
   }
 
   updateCartModal(); // Atualiza o modal do carrinho
+  showFeedbackMessage(); // Mostra a mensagem de feedback
+}
+
+// Função para mostrar a mensagem de feedback
+function showFeedbackMessage() {
+  const feedbackMessage = document.createElement('div');
+  feedbackMessage.textContent = 'Item adicionado ao carrinho!';
+  feedbackMessage.style.backgroundColor = '#4CAF50';
+  feedbackMessage.style.color = 'white';
+  feedbackMessage.style.padding = '10px';
+  feedbackMessage.style.borderRadius = '5px';
+  feedbackMessage.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.2)';
+  feedbackMessage.style.marginBottom = '5px';
+  feedbackMessage.style.opacity = '1';
+  feedbackMessage.style.transition = 'opacity 0.5s ease';
+
+  feedbackContainer.appendChild(feedbackMessage);
+
+  // Ocultar a mensagem após 2 segundos
+  setTimeout(() => {
+    feedbackMessage.style.opacity = '0';
+    setTimeout(() => {
+      feedbackMessage.remove();
+    }, 500); // Tempo suficiente para a transição de opacidade
+  }, 2000);
 }
 
 // Função para atualizar o modal do carrinho
 function updateCartModal() {
-  cartItemsContainer.innerHTML = ""; // Limpar o conteúdo atual
+  cartItemsContainer.innerHTML = "";
   let total = 0;
 
-  // Loop para exibir os itens no carrinho
   cart.forEach(item => {
     const cartItemElement = document.createElement("div");
     cartItemElement.classList.add("flex", "justify-between", "mb-4", "flex-col");
@@ -74,27 +95,24 @@ function updateCartModal() {
       <div class="flex items-center justify-between">
         <div>
           <p class="font-medium">${item.name}</p>
-          <p>Cor: ${item.color}</p> <!-- Exibe a cor do item -->
           <p>Qtd: ${item.quantity}</p>
           <p class="font-medium mt-2">R$ ${item.price.toFixed(3)}</p>
         </div>
-        <button class="remove-from-cart-btn" data-name="${item.name}" data-color="${item.color}">
+        <button class="remove-from-cart-btn" data-name="${item.name}">
           Remover
         </button>
       </div>
     `;
 
-    total += item.price * item.quantity; // Calcula o total
-    cartItemsContainer.appendChild(cartItemElement); // Adiciona o item ao container
+    total += item.price * item.quantity;
+    cartItemsContainer.appendChild(cartItemElement);
   });
 
-  // Atualiza o total no carrinho
   cartTotal.textContent = total.toFixed(3).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL"
   });
 
-  // Atualiza o contador de itens no carrinho
   cartCounter.innerHTML = cart.length;
 }
 
@@ -102,24 +120,21 @@ function updateCartModal() {
 cartItemsContainer.addEventListener("click", function(event) {
   if (event.target.classList.contains("remove-from-cart-btn")) {
     const name = event.target.getAttribute("data-name");
-    const color = event.target.getAttribute("data-color"); // Captura a cor para remover o item correto
-    removeItemCart(name, color);
+    removeItemCart(name);
   }
 });
 
 // Remover item específico do carrinho
-function removeItemCart(name, color) {
-  // Encontrar o item que tem o mesmo nome e a mesma cor
-  const index = cart.findIndex(item => item.name === name && item.color === color);
+function removeItemCart(name) {
+  const index = cart.findIndex(item => item.name === name);
 
   if (index !== -1) {
     const item = cart[index];
 
     if (item.quantity > 1) {
-      item.quantity -= 1; // Se a quantidade for maior que 1, reduz a quantidade
+      item.quantity -= 1;
       updateCartModal();
     } else {
-      // Remove o item se a quantidade for 1
       cart.splice(index, 1);
       updateCartModal();
     }
@@ -131,14 +146,14 @@ checkoutBtn.addEventListener("click", function() {
   if (cart.length === 0) return;
 
   const cartItems = cart.map(item => {
-    return `${item.name} (Cor: ${item.color}) Quantidade: (${item.quantity}) Preço: R$${item.price.toFixed(3)}`;
+    return `${item.name} Quantidade: (${item.quantity}) Preço: R$${item.price.toFixed(3)}`;
   }).join("\n");
 
   const message = encodeURIComponent(cartItems);
-  const phone = "98985209292"; // Número de telefone para o WhatsApp
+  const phone = "98985209292";
 
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
 
-  cart = []; // Limpa o carrinho
+  cart = [];
   updateCartModal();
 });

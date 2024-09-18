@@ -51,6 +51,48 @@
 
     <main class="grid grid-cols-1 md:grid-cols-2 gap-7 mx-auto max-w-7xl px-2 mb-16">
 
+        <!--PRODUTO ITEM-->
+
+<div class="flex gap-2">
+    <img src="./assets/xr.png" 
+         alt="iphone 11"
+         class="w-28 h-28 rounded-md hover:scale-110 hover:rotate-2 duration-300"
+      
+         />
+    
+<div>
+
+<p class="font-bold"> IPHONE XR SEMINOVO</p>
+<p class="text-sm">64GB DE MEMÓRIA</p>
+
+
+<!-- Seleção de Cor -->
+<label for="color" class="text-sm">Escolha a cor:</label>
+<select id="color" class="border rounded px-2 py-1" data-name="IPHONE XR 64GB SEMINOVO">
+    <option value="Branco">Branco</option>
+    <option value="Preto">Preto</option>
+    <option value="Vermelho">Vermelho</option>
+    <option value="Laranja">Azul</option>
+    <option value="Azul">Laranja</option>
+</select>
+
+
+
+<div class="flex items-center gap-2 justify-between ">
+    <p class="font-bold text-lg"> 1.550</p>
+    <BUtton 
+    class="bg-gray-950 px-5 rounded add-to-cart-btn "
+    data-name="IPHONE XR 64GB SEMINOVO"
+    data-price="1.550">
+    
+        <I class="fa fa-cart-plus text-lg text-white"></I>
+    </BUtton>
+   </div>
+ </div>
+
+</div>
+<!--FIM ITEM PRODUTO-->
+
 <!--PRODUTO ITEM-->
 
 <div class="flex gap-2">
@@ -155,7 +197,6 @@
     <option value="Preto">Preto</option>
     <option value="Vermelho">Vermelho</option>
     <option value="Azul">Azul</option>
-    <option value="Verde">Verde</option>
 </select>
 
 <div class="flex items-center gap-2 justify-between ">
@@ -196,7 +237,6 @@
      <option value="Preto">Preto</option>
      <option value="Vermelho">Vermelho</option>
      <option value="Azul">Azul</option>
-     <option value="Verde">Verde</option>
  </select>
 
 
@@ -283,6 +323,12 @@
 <!--FIM ITEM PRODUTO-->
 
 
+<!-- Mensagem de feedback -->
+<div id="feedback-container" style="position: fixed; top: 10px; right: 10px; display: flex; flex-direction: column; align-items: flex-end;">
+    <!-- As mensagens de feedback serão adicionadas aqui -->
+  </div>
+  
+  
 
 <!--PRODUTO ITEM-->
 <div class="flex gap-2">
